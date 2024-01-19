@@ -1,6 +1,6 @@
 # projet_go_2024-01
 
-- Basic:
+- Basic
 
 - Cmds:
 - > go mod download
