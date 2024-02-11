@@ -22,7 +22,7 @@ type Appointment struct {
 
 func main() {
 	var err error
-	db, err = sql.Open("postgres", "postgres://achraf:ok@localhost/appointmentsdb?sslmode=disable")
+	db, err = sql.Open("postgres", "postgres://postgres:madO100641@localhost/appointmentsdb?sslmode=disable")
 	if err != nil {
 		log.Fatal(err)
 	}
