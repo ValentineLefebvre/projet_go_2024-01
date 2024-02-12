@@ -42,7 +42,7 @@ type User struct {
 
 func main() {
 	var err error
-	db, err = sql.Open("postgres", "postgres://user:pwd@localhost/appointmentsdb?sslmode=disable")
+	db, err = sql.Open("postgres", "postgres://test:test@localhost/appointmentsdb?sslmode=disable")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -103,6 +103,8 @@ func main() {
 	http.HandleFunc("/salon_openings", showSalonOpenings)
 	http.HandleFunc("/salon_openings/new", showNewSalonOpeningForm)
 	http.HandleFunc("/salon_openings/create", createSalonOpening)
+	http.HandleFunc("/salon/delete/", deleteSalon)
+	http.HandleFunc("/user/delete/", deleteUser)
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
@@ -112,11 +114,30 @@ func showAppointments(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "index.html", map[string]interface{}{"appointments": appointments})
 }
 
+func deleteSalon(w http.ResponseWriter, r *http.Request) {
+    if r.Method != http.MethodPost {
+        http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+        return
+    }
+
+    id := r.URL.Path[len("/salon/delete/"):]
+    _, err := db.Exec("DELETE FROM salon WHERE id = $1", id)
+    if err != nil {
+        http.Error(w, "Failed to delete salon", http.StatusInternalServerError)
+        return
+    }
+
+    http.Redirect(w, r, "/salons", http.StatusSeeOther)
+}
+
+func showUsers(w http.ResponseWriter, r *http.Request) {
+    users := getDBUsers()
+    renderTemplate(w, "index.html", map[string]interface{}{"users": users})
+}
+
 func showNewAppointmentForm(w http.ResponseWriter, r *http.Request) {
-	// Check if the user is logged in
 	isLoggedIn := isLoggedIn(r)
 
-	// Pass the information to the template
 	data := map[string]interface{}{
 		"IsLoggedIn": isLoggedIn,
 	}
@@ -124,7 +145,6 @@ func showNewAppointmentForm(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "new.html", data)
 }
 
-// Function to check if the user is logged in
 func isLoggedIn(r *http.Request) bool {
 	session, _ := store.Get(r, "session-name")
 	return session.Values["authenticated"] == true
@@ -158,9 +178,6 @@ func showLogout(w http.ResponseWriter, r *http.Request) {
 }
 
 func authenticate(w http.ResponseWriter, r *http.Request) {
-	// Logique pour l'authentification
-	// ...
-	// Redirection en fonction du type d'utilisateur (salon, client, administrateur)
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
@@ -192,8 +209,7 @@ func showNewSalonOpeningForm(w http.ResponseWriter, r *http.Request) {
 }
 
 func createSalonOpening(w http.ResponseWriter, r *http.Request) {
-	// Logique pour créer un créneau d'ouverture
-	// ...
+	
 	http.Redirect(w, r, "/salon_openings", http.StatusSeeOther)
 }
 
@@ -235,6 +251,26 @@ func getDBSalonOpenings() []SalonOpening {
 	}
 
 	return salonOpenings
+}
+
+func getDBUsers() []User {
+    rows, err := db.Query("SELECT * FROM users")
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer rows.Close()
+
+    var users []User
+    for rows.Next() {
+        var user User
+        err := rows.Scan(&user.ID, &user.Username, &user.Password, &user.Email, &user.SalonID, &user.UserType)
+        if err != nil {
+            log.Fatal(err)
+        }
+        users = append(users, user)
+    }
+
+    return users
 }
 
 func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {

@@ -1,18 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Appointments</title>
-</head>
-<body>
-<h1>Bienvenue à RdvNow!</h1>
-<ul>
-    {{range .appointments}}
-    <li>{{.Name}} - {{.Date}}</li>
-    {{end}}
-</ul>
-<a href="/appointments/new">Créer un nouveau rendez-vous</a>
-</body>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Appointments</h1>
+      <ul class="list-group">
+        {{range .appointments}}
+        <li class="list-group-item">{{.Name}} - {{.Date}}</li>
+        {{end}}
+      </ul>
+      <a class="btn btn-primary mt-3" href="/appointments/new"
+        >Create New Appointment</a
+      >
+    </div>
+    <div class="container">
+      <h1>List of Salons</h1>
+      <ul>
+        {{range .salons}}
+        <li>
+          ID: {{.ID}}, Name: {{.Name}}, Address: {{.Address}}
+          <form
+            method="post"
+            action="/salon/delete/{{.ID}}"
+            style="display: inline"
+          >
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </li>
+        {{end}}
+      </ul>
+    </div>
+    <div class="container">
+      <h1>List of Users</h1>
+      <ul>
+        {{range .users}}
+        <li>ID: {{.ID}}, Username: {{.Username}}, Email: {{.Email}}</li>
+        {{end}}
+      </ul>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
 </html>

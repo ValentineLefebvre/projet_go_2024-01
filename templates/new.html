@@ -1,22 +1,24 @@
-<!-- templates/new.html -->
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>New Appointment</title>
-</head>
-<body>
-<h1>New Appointment</h1>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <h1>New Appointment</h1>
 
-{{ if .IsLoggedIn }}
-<form action="/appointments/create" method="post">
-    <!-- ... (le reste du formulaire) -->
-    <input type="submit" value="Create Appointment">
-</form>
-{{ else }}
-<p>You need to be logged in to create an appointment.</p>
-<a href="/login">Login</a>
-{{ end }}
+    {{ if .IsLoggedIn }}
+    <form action="/appointments/create" method="post">
+      <input type="submit" value="Create Appointment" />
+    </form>
+    {{ else }}
+    <p>You need to be logged in to create an appointment.</p>
+    <a href="/login">Login</a>
+    {{ end }}
 
-<a href="/">Back to Appointments</a>
-</body>
+    <a href="/">Back to Appointments</a>
+  </body>
 </html>
