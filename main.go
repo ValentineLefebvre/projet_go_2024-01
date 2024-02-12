@@ -42,47 +42,51 @@ type User struct {
 
 func main() {
 	var err error
-	db, err = sql.Open("postgres", "postgres://achraf:ok@localhost/appointmentsdb?sslmode=disable")
+	db, err = sql.Open("postgres", "postgres://user:pwd@localhost/appointmentsdb?sslmode=disable")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 
 	_, err = db.Exec(`
-		CREATE TABLE IF NOT EXISTS appointments (
-			id SERIAL PRIMARY KEY,
-			name TEXT NOT NULL,
-			date TIMESTAMP NOT NULL,
-			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-		)
-	`)
-	if err != nil {
-		log.Fatal(err)
-	}
+	DROP TABLE "appointments";
+	DROP TABLE "salon";
+	DROP TABLE "user";
+	CREATE TABLE IF NOT EXISTS "appointments"(
+		"id" SERIAL,
+		"date" DATE NOT NULL,
+		"salon_id" INT NOT NULL,
+		"start_time" TIME(0) WITH TIME ZONE NOT NULL,
+		"end_time" TIME(0) WITH TIME ZONE NOT NULL,
+		"user_id" BIGINT NULL
+	);
+	ALTER TABLE
+		"appointments" ADD PRIMARY KEY("id");
+	CREATE TABLE IF NOT EXISTS "salon"(
+		"id" SERIAL,
+		"name" VARCHAR(255) NOT NULL,
+		"adress" VARCHAR(255) NOT NULL,
+		"manager_id" INT NOT NULL
+	);
+	ALTER TABLE
+		"salon" ADD PRIMARY KEY("id");
+	CREATE TABLE IF NOT EXISTS "user"(
+		"id" SERIAL,
+		"email" VARCHAR(255) NOT NULL,
+		"pwd" VARCHAR(255) NOT NULL,
+		"name" VARCHAR(255) NOT NULL,
+		"admin" BOOLEAN NOT NULL
+	);
+	ALTER TABLE
+		"user" ADD PRIMARY KEY("id");
+	ALTER TABLE
+		"salon" ADD CONSTRAINT "salon_manager_foreign" FOREIGN KEY("manager_id") REFERENCES "user"("id");
+	ALTER TABLE
+		"appointments" ADD CONSTRAINT "appointments_user_id_foreign" FOREIGN KEY("user_id") REFERENCES "user"("id");
+	ALTER TABLE
+		"appointments" ADD CONSTRAINT "appointments_salon_id_foreign" FOREIGN KEY("salon_id") REFERENCES "salon"("id");
 
-	_, err = db.Exec(`
-		CREATE TABLE IF NOT EXISTS salon_openings (
-			id SERIAL PRIMARY KEY,
-			salon_id INT NOT NULL,
-			coiffeur_id INT NOT NULL,
-			day_of_week INT NOT NULL,
-			start_time TIME NOT NULL,
-			end_time TIME NOT NULL
-		)
-	`)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	_, err = db.Exec(`
-		CREATE TABLE IF NOT EXISTS users (
-			id SERIAL PRIMARY KEY,
-			username TEXT NOT NULL,
-			password TEXT NOT NULL,
-			email TEXT NOT NULL,
-			salon_id INT,
-			user_type INT NOT NULL
-		)
+	INSERT INTO "user" (email, pwd, name, admin) VALUES ('admin@gmail.com', 'admin', 'admin', true);
 	`)
 	if err != nil {
 		log.Fatal(err)
