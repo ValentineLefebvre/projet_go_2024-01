@@ -16,19 +16,12 @@ var db *sql.DB
 var store = sessions.NewCookieStore([]byte("cGPT3R0ck5_MY_Super_Secret_Key"))
 
 type Appointment struct {
-	ID        int
-	Name      string
-	Date      time.Time
-	CreatedAt time.Time
-}
-
-type SalonOpening struct {
-	ID         int
-	SalonID    int
-	CoiffeurID int
-	DayOfWeek  int
-	StartTime  time.Time
-	EndTime    time.Time
+	ID 			int
+	Date 		int
+	SalonID 	int
+	StartTime 	time.Time
+	EndTime 	time.Time
+	UserID 		int
 }
 
 type User struct {
@@ -38,6 +31,12 @@ type User struct {
 	Email    string
 	SalonID  int
 	UserType int
+}
+type Salon struct {
+	ID 			int
+	Name 		string
+	Adress 		string
+	ManagerID 	int
 }
 
 func main() {
