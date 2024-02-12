@@ -1,22 +1,22 @@
+<!-- templates/new.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nouveau RDV</title>
+    <title>New Appointment</title>
 </head>
 <body>
-<h1>Nouveau RDV</h1>
+<h1>New Appointment</h1>
+
+{{ if .IsLoggedIn }}
 <form action="/appointments/create" method="post">
-    <label for="name">Name:</label>
-    <input type="text" id="name" name="name" required><br>
-
-    <label for="date">Date:</label>
-    <input type="datetime-local" id="date" name="date" required><br>
-
+    <!-- ... (le reste du formulaire) -->
     <input type="submit" value="Create Appointment">
 </form>
-<a href="/">Retour aux RDVs</a>
+{{ else }}
+<p>You need to be logged in to create an appointment.</p>
+<a href="/login">Login</a>
+{{ end }}
+
+<a href="/">Back to Appointments</a>
 </body>
 </html>
