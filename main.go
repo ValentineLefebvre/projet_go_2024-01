@@ -172,14 +172,24 @@ func createAccount(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 	email := r.FormValue("email")
+	salon_name := r.FormValue("salon_name")
+	salon_adress := r.FormValue("salon_adress")
 
-	_, err := db.Exec("INSERT INTO users (username, password, email, user_type) VALUES ($1, $2, $3, $4)", username, password, email, 1)
+	var userID int
+	_, err := db.Exec("INSERT INTO users (name, pwd, email, admin) VALUES ($1, $2, $3, $4) RETURNING id", username, password, email, false).Scan(&userID)
 	if err != nil {
 		http.Error(w, "Failed to create account", http.StatusInternalServerError)
 		return
 	}
 
-	http.Redirect(w, r, "/login", http.StatusSeeOther)
+	_, err := db.Exec("INSERT INTO salon (name, address, manager_id) VALUES ($1, $2, $3)", salon_name, salon_adress, userID)
+	if err != nil {
+		http.Error(w, "Failed to create salon", http.StatusInternalServerError)
+		return
+	}
+
+	// http.Redirect(w, r, "/login", http.StatusSeeOther)
+	http.Redirect(w, r, "/salon_openings", http.StatusSeeOther)
 }
 
 func showSalonOpenings(w http.ResponseWriter, r *http.Request) {
